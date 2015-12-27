@@ -1,0 +1,27 @@
+> setwd("~/Documents/R")
+> # Read activity labels
+> activLab <- read.table("UCI HAR Dataset/activity_labels.txt")
+> # Read features
+> features <- read.table("UCI HAR Dataset/features.txt")
+> # Convert activLab into a character vector 
+> activLab <- as.character(activLab[,2])
+> # Convert features into a character vector
+> features <- as.character(features[,2])
+> # Extract the measurements on the mean and standard deviation for each measurement
+> meanandstd <- grep(".*mean.*|.*std.*", features)
+> # Read the test dataset
+> test <- read.table("UCI HAR Dataset/test/X_test.txt")[meanandstd]
+> testActiv <- read.table("UCI HAR Dataset/test/Y_test.txt")
+> testSub <- read.table("UCI HAR Dataset/test/subject_test.txt")
+> test <- cbind(test, testActiv, testSub)
+> # Read the train datasets and bind the data
+> train <- read.table("UCI HAR Dataset/train/X_train.txt")[meanandstd]
+> trainActiv <- read.table("UCI HAR Dataset/train/Y_train.txt")
+> trainSub <- read.table("UCI HAR Dataset/train/subject_train.txt")
+> train <- cbind(train, trainActiv, trainSub)
+> # Bind all data in one dataset
+> allthedata <- rbind(train, test)
+> # Label the data
+> colnames(allthedata) <- c(meanandstd,"activity","subject")
+> # Create a second, independent tidy data set with the average of each variable for each activity and each subject
+> avgdata <- ddply(allthedata, .(subject, activity), function(x) colMeans(x[, 1:79]))
